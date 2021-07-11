@@ -26,15 +26,17 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "./public/index.html"));
 });
 
-app.post("/api/notes", (req, res) => {
-  const notesSaved = fs.readFileSync("./db/db.json", "utf8");
-  const note = req.body;
-  note.id = notesSaved.length.toString();
-  notesSaved.push(note);
+app.post("/api/notes", function (req, res) {
+  let savedNotes = fs.readFileSync("./db/db.json", "utf8");
+  let writeNote = req.body;
+  writeNote.id = savedNotes.length.toString();
+  const jsonNotes = JSON.stringify(savedNotes);
 
-  fs.writeFileSync("./db/db.json", JSON.stringify(notesSaved));
-  console.log(`Note Saved! New note: ${note}`);
-  res.json(notesSaved);
+  console.log("Note: ", writeNote);
+  savedNotes.push(writeNote);
+
+  fs.writeFileSync("./db/db.json", jsonNotes);
+  res.json(savedNotes);
 });
 
 app.listen(PORT, () => {
