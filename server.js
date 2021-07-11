@@ -27,15 +27,21 @@ app.get("*", (req, res) => {
 });
 
 app.post("/api/notes", function (req, res) {
-  let savedNotes = fs.readFileSync("./db/db.json", "utf8");
+  let savedNotes = JSON.parse(
+    fs.readFileSync("./db/db.json", "utf8", () => {
+      if (!savedNotes) {
+        savedNotes = [];
+      }
+    })
+  );
   let writeNote = req.body;
   writeNote.id = savedNotes.length.toString();
-  const jsonNotes = JSON.stringify(savedNotes);
 
   console.log("Note: ", writeNote);
   savedNotes.push(writeNote);
+  console.log(savedNotes);
 
-  fs.writeFileSync("./db/db.json", jsonNotes);
+  fs.writeFileSync("./db/db.json", JSON.stringify(savedNotes));
   res.json(savedNotes);
 });
 
