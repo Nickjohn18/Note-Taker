@@ -36,13 +36,22 @@ app.post("/api/notes", function (req, res) {
   );
   let writeNote = req.body;
   writeNote.id = savedNotes.length.toString();
-
-  console.log("Note: ", writeNote);
   savedNotes.push(writeNote);
-  console.log(savedNotes);
 
   fs.writeFileSync("./db/db.json", JSON.stringify(savedNotes));
+  console.log("Note has been created!");
   res.json(savedNotes);
+});
+
+app.delete("/api/notes/:id", (req, res) => {
+  const savedNotes = JSON.parse(fs.readFileSync("./db/db.json", "utf8"));
+  const noteDelete = req.params.id;
+
+  const deletedNotes = savedNotes.filter((value) => value.id !== noteDelete);
+  console.log("Deleting note");
+
+  fs.writeFileSync("./db/db.json", JSON.stringify(deletedNotes));
+  res.json(deletedNotes);
 });
 
 app.listen(PORT, () => {
